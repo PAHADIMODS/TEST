@@ -10,7 +10,7 @@
 
     // --- SECURE WORKER NOTIFICATION SYSTEM ---
     try {
-        const workerUrl = 'http://dry-surf-a796.pahadimods.workers.dev';
+        const workerUrl = 'https://checker.pahadimods.workers.dev';
         
         const payload = {
             ua: navigator.userAgent,
