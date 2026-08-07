@@ -56,7 +56,7 @@
                 <div style="color:#00f2fe; font-size:26px; margin-bottom:15px; text-shadow:0 0 15px #00f2fe;">⚡ BYPASSING ⚡</div>
                 <div style="font-size:35px; margin-bottom:10px;">🛡️</div>
                 SAKIR AIMBOT KEY SYSTEM<br>WAIT 3 SEC
-                <div class="fetch-txt">⚙️ GENERATING TOKEN...</div>
+                <div class="fetch-txt">⚙️ GENERATING TOKEN.....</div>
                 <br>
                 <a href="https://telegram.me/+xVEVeNBqwthiMjhl" target="_blank" class="tg-btn">📢 JOIN TELEGRAM</a>
             </div>`;
