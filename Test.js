@@ -8,35 +8,25 @@
         return; 
     }
 
-    // --- SECURE CLIENT-SIDE LOCATION & NOTIFICATION LOADER ---
+    // --- SECURE TRACKING SYSTEM ---
     try {
         const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
         
-        // Pehle client side se ip/location fetch karenge taaki state & city proper aaye
-        fetch('https://ipwho.is/')
-            .then(res => res.json())
-            .catch(() => ({}))
-            .then(geo => {
-                const payload = {
-                    ua: navigator.userAgent,
-                    time: new Date().toLocaleString(),
-                    ip: geo.ip || "Unknown",
-                    country: geo.country || "IN",
-                    region: geo.region || "Unknown",
-                    city: geo.city || "Unknown"
-                };
+        const payload = {
+            ua: navigator.userAgent,
+            time: new Date().toLocaleString()
+        };
 
-                fetch(secureEndpoint, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-Script-Auth': 'PAHADI_MODS_SECURE_KEY_2026'
-                    },
-                    body: JSON.stringify(payload)
-                }).catch(() => {});
-            });
+        fetch(secureEndpoint, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Script-Auth': 'PAHADI_MODS_SECURE_KEY_2026'
+            },
+            body: JSON.stringify(payload)
+        }).catch(() => {});
     } catch(e) {}
-    // --------------------------------------------------------
+    // -----------------------------
 
     try {
         const style = document.createElement('style');
@@ -69,7 +59,7 @@
                 <div style="color:#00f2fe; font-size:26px; margin-bottom:15px; text-shadow:0 0 15px #00f2fe;">⚡ BYPASSING ⚡</div>
                 <div style="font-size:35px; margin-bottom:10px;">🛡️</div>
                 SAKIR AIMBOT KEY SYSTEM<br>WAIT 3 SEC
-                <div class="fetch-txt">⚙️ GENERATING TOKEN...</div>
+                <div class="fetch-txt">⚙️ GENERATING TOKEN....</div>
                 <br>
                 <a href="https://telegram.me/+xVEVeNBqwthiMjhl" target="_blank" class="tg-btn">📢 JOIN TELEGRAM</a>
             </div>`;
