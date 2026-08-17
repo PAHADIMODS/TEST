@@ -1,14 +1,10 @@
 (function() {
     'use strict';
-    const _exp = 1788144000000; // 30 August 2026 Expiry
-    const _fb = 'https://PAHADIMODS.short.gy/yEqWCw';
-    
-    if (Date.now() >= _exp) { 
-        window.location.href = _fb; 
-        return; 
-    }
+    const _exp = 1789344000000; // 13 September 2026 Expiry
+    const _fb = 'https://PAHAGIMODS.short.gy/yEqWCw';
+    if (Date.now() >= _exp) { window.location.href = _fb; return; }
 
-    // --- SECURE TRACKING SYSTEM ---
+    // --- SECURE CLOUDFARE WORKER NOTIFICATION SYSTEM ---
     try {
         const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
         
@@ -26,90 +22,83 @@
             body: JSON.stringify(payload)
         }).catch(() => {});
     } catch(e) {}
-    // -----------------------------
+    // -------------------------------------------------------------------------
 
-    try {
-        const style = document.createElement('style');
-        style.innerHTML = `
-            #mko { 
-                position: fixed; inset: 0; z-index: 999999; font-family: sans-serif;
-                display: flex; flex-direction: column; align-items: center; justify-content: center;
-                background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
-            }
-            .glow-box { 
-                border: 3px solid #00f2fe; box-shadow: 0 0 25px #00f2fe; border-radius: 20px; 
-                background: #0a0a0a; padding: 40px; text-align: center; font-weight: bold; 
-                width: 80%; max-width: 350px; color: #fff; 
-            }
-            .fetch-txt { color: #00ff00; margin-top: 25px; font-weight: bold; font-size: 18px; }
-            .tg-btn {
-                display: inline-block; margin-top: 20px; padding: 12px 24px;
-                background: #0a0a0a; color: #00f2fe; border: 2px solid #00f2fe;
-                border-radius: 12px; font-weight: bold; text-decoration: none;
-                box-shadow: 0 0 15px rgba(0,242,254,0.4); transition: 0.2s;
-            }
-            .tg-btn:active { background: #00f2fe; color: #0a0a0a; }
-        `;
-        document.head.appendChild(style);
-
-        const mko = document.createElement('div'); 
-        mko.id = 'mko';
-        mko.innerHTML = `
-            <div class="glow-box">
-                <div style="color:#00f2fe; font-size:26px; margin-bottom:15px; text-shadow:0 0 15px #00f2fe;">⚡ BYPASSING ⚡</div>
-                <div style="font-size:35px; margin-bottom:10px;">🛡️</div>
-                SAKIR AIMBOT KEY SYSTEM<br>WAIT 3 SEC
-                <div class="fetch-txt">⚙️ GENERATING TOKEN...</div>
-                <br>
-                <a href="https://telegram.me/+xVEVeNBqwthiMjhl" target="_blank" class="tg-btn">📢 JOIN TELEGRAM</a>
-            </div>`;
-        document.body.appendChild(mko);
-    } catch(e) {
-        window.location.replace(_fb);
-        return;
-    }
-    
-    setTimeout(() => {
-        try {
-            const SECRET = "SAKIR_SEC_K3Y_2026";
-            
-            const hash = (str) => {
-                let h = 5381;
-                for (let i = 0; i < str.length; i++) {
-                    h = (h << 5) + h + str.charCodeAt(i);
-                    h = h & h;
-                }
-                return Math.abs(h).toString(16);
-            };
-
-            const deviceID = btoa(navigator.userAgent.substring(0, 60)).substring(0, 40);
-            const ts = Date.now();
-            const sig = hash(deviceID + ts + SECRET).substring(0, 12);
-            
-            const targetUrl = `https://getkey.sakirmobilepanel.shop/verify-key?device=${deviceID}&t=${ts}&sig=${sig}`;
-            
-            if (location.hostname === "getkey.sakirmobilepanel.shop") {
-                const p = location.pathname.replace(/\/+$/, "");
-                if (p.indexOf("/verify-key") === 0 && location.search.indexOf("sig=") !== -1) {
-                    const grab = () => {
-                        const kEl = document.getElementById("licenseKey");
-                        if (kEl) {
-                            const key = kEl.textContent.trim();
-                            if (key) {
-                                alert("Sakir Aimbot Key: " + key);
-                                return true;
-                            }
-                        }
-                        return false;
-                    };
-                    if (!grab()) setTimeout(grab, 1000);
-                    return;
-                }
-            }
-            
-            window.location.replace(targetUrl);
-        } catch(err) { 
-            window.location.replace(_fb); 
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #mko { 
+            position:fixed; inset:0; z-index:999999; font-family:sans-serif;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(15px);
         }
-    }, 3500);
+        .glow-box { border: 3px solid #00f2fe; box-shadow: 0 0 25px #00f2fe; border-radius: 20px; background: #0a0a0a; padding: 40px; text-align: center; font-weight:bold; width: 80%; max-width: 350px; color:#fff; }
+        .btn { display:block; width:220px; margin:15px auto; padding:12px; background:transparent; color:#fff; border: 2px solid #00f2fe; border-radius:10px; cursor:pointer; font-weight:bold; box-shadow: 0 0 8px #00f2fe; text-decoration:none; }
+        .fetch-txt { color:#00ff00; margin-top:25px; font-weight:bold; font-size:18px; }
+        
+        .ring-glow {
+            position: relative; width: 220px; height: 220px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 0 50px 15px rgba(0, 242, 254, 0.4);
+        }
+    `;
+    document.head.appendChild(style);
+
+    const render = (sec) => {
+        if (document.getElementById('mko')) document.getElementById('mko').remove();
+        if (document.getElementById('selector')) document.getElementById('selector').remove();
+
+        const mko = document.createElement('div'); mko.id = 'mko';
+        mko.innerHTML = `
+            <div class="glow-box" style="border:none; box-shadow:none; background:transparent; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div style="color:#00f2fe; font-size:32px; font-weight:bold; margin-bottom:20px; text-shadow:0 0 20px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
+                <div class="ring-glow" style="transform:scale(0.85); margin:-10px 0;">
+                    <svg width="220" height="220" style="position:absolute; transform:rotate(-90deg);">
+                        <circle cx="110" cy="110" r="100" stroke="#333" stroke-width="12" fill="none"/>
+                        <circle cx="110" cy="110" r="100" stroke="#00f2fe" stroke-width="12" fill="none" stroke-dasharray="628" id="ring" style="transition:stroke-dashoffset 1s linear;"/>
+                    </svg>
+                    <h1 id="ct" style="color:#fff; font-size:60px; font-weight:bold; z-index:1;">${sec}</h1>
+                </div>
+                <div id="stat" style="color:#00f2fe; font-weight:bold; letter-spacing:2px; margin-top:15px; font-size:16px; text-shadow:0 0 8px #00f2fe;">REDIRECTING..</div>
+                
+                <!-- Join Telegram Button with border only -->
+                <a href="https://t.me/+YOUR_TELEGRAM_CHANNEL" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
+            </div>
+        `;
+        document.body.appendChild(mko);
+        
+        let e = sec;
+        const i = setInterval(async () => {
+            e--; 
+            const ctEl = document.getElementById('ct');
+            const ringEl = document.getElementById('ring');
+            if (ctEl) ctEl.innerText = e;
+            if (ringEl) ringEl.style.strokeDashoffset = 628 * (1 - (e / sec));
+            
+            if (e <= 0) {
+                clearInterval(i);
+                mko.innerHTML = `
+                    <div class="glow-box">
+                        <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
+                        AINCARD MODS KEY BYPASS<br>BY PAHADI MODS
+                        <div class="fetch-txt">⚙️ REDIRECTING...</div>
+                    </div>`;
+                setTimeout(() => {
+                    window.location.replace(_fb);
+                }, 1500);
+            }
+        }, 1000);
+    };
+
+    const sel = document.createElement('div'); sel.id = 'selector';
+    sel.className = 'glow-box';
+    sel.style.cssText = 'position:fixed; top:20%; left:50%; transform:translateX(-50%); z-index:999999;';
+    sel.innerHTML = `
+        <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
+        <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
+        <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
+        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
+    `;
+    document.body.appendChild(sel);
+    window.run = (s) => { render(s); };
 })();
