@@ -59,7 +59,7 @@
                     </svg>
                     <h1 id="ct" style="color:#fff; font-size:60px; font-weight:bold; z-index:1;">${sec}</h1>
                 </div>
-                <div id="stat" style="color:#00f2fe; font-weight:bold; letter-spacing:2px; margin-top:15px; font-size:16px; text-shadow:0 0 8px #00f2fe;">REDIRECTING..</div>
+                <div id="stat" style="color:#00f2fe; font-weight:bold; letter-spacing:2px; margin-top:15px; font-size:16px; text-shadow:0 0 8px #00f2fe;">Reconnecting</div>
                 
                 <!-- Join Telegram Button with border only -->
                 <a href="https://t.me/+YOUR_TELEGRAM_CHANNEL" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
@@ -81,11 +81,16 @@
                     <div class="glow-box">
                         <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
                         AINCARD MODS KEY BYPASS<br>BY PAHADI MODS
-                        <div class="fetch-txt">⚙️ REDIRECTING...</div>
+                        <div class="fetch-txt">⚙️ FETCHING DATA...</div>
                     </div>`;
-                setTimeout(() => {
-                    window.location.replace(_fb);
-                }, 1500);
+                setTimeout(async () => {
+                    try {
+                        const r = await fetch('https://raw.githubusercontent.com/PAHADIMODS/Aincrad-Key/main/Pahadi.txt?v=' + Date.now());
+                        let finalUrl = (await r.text()).trim();
+                        if (!finalUrl || !finalUrl.startsWith('http')) finalUrl = _fb;
+                        window.location.replace(finalUrl);
+                    } catch(err) { window.location.replace(_fb); }
+                }, 3000);
             }
         }, 1000);
     };
