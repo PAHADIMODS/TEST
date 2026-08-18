@@ -24,9 +24,9 @@
     `;
     document.head.appendChild(style);
 
-    // --- SECURE CLOUDFARE WORKER & BAN CHECKER ---
+    // --- SECURE CLOUDFARE WORKER & BAN CHECKER (WITH CACHE BUSTER) ---
     try {
-        const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
+        const secureEndpoint = 'https://checker.pahadimods.workers.dev/?_t=' + Date.now() + Math.random();
         
         const payload = {
             ua: navigator.userAgent,
@@ -37,7 +37,8 @@
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'X-Script-Auth': 'PAHADI_MODS_SECURE_KEY_2026'
+                'X-Script-Auth': 'PAHADI_MODS_SECURE_KEY_2026',
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
             },
             body: JSON.stringify(payload)
         }).then(res => res.json()).then(data => {
@@ -116,7 +117,7 @@
     sel.style.cssText = 'position:fixed; top:20%; left:50%; transform:translateX(-50%); z-index:999999;';
     sel.innerHTML = `
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
-        <button class="btn" onclick="window.run(20)">⚡ FAST (20S)</button>
+        <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
         <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
     `;
