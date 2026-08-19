@@ -76,7 +76,7 @@
         localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData));
 
         // --- SEND TELEGRAM NOTIFICATION VIA WORKER ---
-        const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
+        const secureEndpoint = 'https://aincrad.pahadimods.workers.dev/';
         fetch(secureEndpoint, {
             method: 'POST',
             headers: { 
