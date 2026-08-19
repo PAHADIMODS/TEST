@@ -24,41 +24,71 @@
     `;
     document.head.appendChild(style);
 
-    // --- SECURE CLOUDFARE WORKER & BAN CHECKER (WITH CACHE BUSTER) ---
+    // --- CLIENT-SIDE ANTI-SPAM & BAN SYSTEM ---
     try {
-        const secureEndpoint = 'https://checker.pahadimods.workers.dev/?_t=' + Date.now() + Math.random();
-        
-        const payload = {
-            ua: navigator.userAgent,
-            time: new Date().toLocaleString()
-        };
+        const now = Date.now();
+        let spamData = JSON.parse(localStorage.getItem('pahadi_spam_data') || '{"timestamps":[], "bannedUntil":0}');
 
+        // Check if banned (1 Hour = 3600000 ms)
+        if (spamData.bannedUntil && now < spamData.bannedUntil) {
+            const banDiv = document.createElement('div');
+            banDiv.id = 'mko';
+            banDiv.innerHTML = `
+                <div class="glow-box" style="border: 3px solid #ff3333; box-shadow: 0 0 25px #ff3333;">
+                    <div style="font-size:40px; margin-bottom:10px;">🚫</div>
+                    <div style="color:#ff3333; font-size:22px; margin-bottom:10px; text-shadow:0 0 10px #ff3333;">Don't Spam</div>
+                    Your Ip Is Banned For 1Hr<br><br>
+                    <span style="color:#00f2fe; font-size:18px; text-shadow:0 0 8px #00f2fe;">Pahadi Mods</span>
+                </div>`;
+            document.body.appendChild(banDiv);
+            return; // Stop script execution
+        }
+
+        // Reset ban if expired
+        if (spamData.bannedUntil && now >= spamData.bannedUntil) {
+            spamData = { timestamps: [], bannedUntil: 0 };
+        }
+
+        // Filter timestamps for last 4 minutes (240000 ms)
+        let timestamps = (spamData.timestamps || []).filter(t => now - t < 240000);
+
+        // If run more than 3 times in 4 minutes -> Ban for 1 Hour
+        if (timestamps.length >= 3) {
+            spamData.bannedUntil = now + 3600000;
+            spamData.timestamps = [];
+            localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData));
+
+            const banDiv = document.createElement('div');
+            banDiv.id = 'mko';
+            banDiv.innerHTML = `
+                <div class="glow-box" style="border: 3px solid #ff3333; box-shadow: 0 0 25px #ff3333;">
+                    <div style="font-size:40px; margin-bottom:10px;">🚫</div>
+                    <div style="color:#ff3333; font-size:22px; margin-bottom:10px; text-shadow:0 0 10px #ff3333;">Don't Spam</div>
+                    Your Ip Is Banned For 1Hr<br><br>
+                    <span style="color:#00f2fe; font-size:18px; text-shadow:0 0 8px #00f2fe;">Pahadi Mods</span>
+                </div>`;
+            document.body.appendChild(banDiv);
+            return;
+        }
+
+        timestamps.push(now);
+        spamData.timestamps = timestamps;
+        localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData));
+
+        // --- SEND TELEGRAM NOTIFICATION VIA WORKER ---
+        const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
         fetch(secureEndpoint, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'X-Script-Auth': 'PAHADI_MODS_SECURE_KEY_2026',
-                'Cache-Control': 'no-cache, no-store, must-revalidate'
+                'X-Script-Auth': 'PAHADI_MODS_SECURE_KEY_2026'
             },
-            body: JSON.stringify(payload)
-        }).then(res => res.json()).then(data => {
-            if (data.banned) {
-                if (document.getElementById('selector')) document.getElementById('selector').remove();
-                if (document.getElementById('mko')) document.getElementById('mko').remove();
-                
-                const banDiv = document.createElement('div');
-                banDiv.id = 'mko';
-                banDiv.innerHTML = `
-                    <div class="glow-box" style="border: 3px solid #ff3333; box-shadow: 0 0 25px #ff3333;">
-                        <div style="font-size:40px; margin-bottom:10px;">🚫</div>
-                        <div style="color:#ff3333; font-size:22px; margin-bottom:10px; text-shadow:0 0 10px #ff3333;">Don't Spam</div>
-                        Your Ip Is Banned For 1Hr<br><br>
-                        <span style="color:#00f2fe; font-size:18px; text-shadow:0 0 8px #00f2fe;">Pahadi Mods</span>
-                    </div>`;
-                document.body.appendChild(banDiv);
-                throw new Error("IP Banned");
-            }
+            body: JSON.stringify({
+                ua: navigator.userAgent,
+                time: new Date().toLocaleString()
+            })
         }).catch(() => {});
+
     } catch(e) {}
     // -------------------------------------------------------------------------
 
@@ -117,7 +147,7 @@
     sel.style.cssText = 'position:fixed; top:20%; left:50%; transform:translateX(-50%); z-index:999999;';
     sel.innerHTML = `
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
-        <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
+        <button class="btn" onclick="window.run(25)">⚡ FAST (20S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
         <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
     `;
