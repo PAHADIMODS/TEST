@@ -86,39 +86,11 @@
 
     } catch(e) {}
 
-    // --- ERROR 6 OBFUSCATION & TOKEN INJECTOR ---
-    const bypassAndRedirect = async (baseUrl, selectedSec) => {
-        try {
-            const SECRET = "SAKIR_SEC_K3Y_2026";
-            const hash = (str) => {
-                let h = 5381;
-                for (let i = 0; i < str.length; i++) {
-                    h = (h << 5) + h + str.charCodeAt(i);
-                    h = h & h;
-                }
-                return Math.abs(h).toString(16);
-            };
-
-            const deviceID = btoa(navigator.userAgent.substring(0, 60)).substring(0, 40);
-            // Add exact elapsed timer delta so backend thinks user waited full duration
-            const ts = Date.now() - (selectedSec * 1000); 
-            const sig = hash(deviceID + ts + SECRET).substring(0, 12);
-
-            let separator = baseUrl.includes('?') ? '&' : '?';
-            let finalTarget = `${baseUrl}${separator}device=${deviceID}&t=${ts}&sig=${sig}&bypassed=true`;
-
-            await fetch(finalTarget, {
-                method: 'HEAD',
-                mode: 'no-cors',
-                headers: { 'Cache-Control': 'no-cache' }
-            }).catch(() => {});
-
-            setTimeout(() => {
-                window.location.replace(finalTarget);
-            }, 800);
-        } catch(err) {
+    // --- SAFE REDIRECT SYSTEM ---
+    const smoothRedirect = (baseUrl) => {
+        setTimeout(() => {
             window.location.replace(baseUrl);
-        }
+        }, 1000);
     };
 
     const render = (sec) => {
@@ -164,9 +136,9 @@
                         const r = await fetch('https://raw.githubusercontent.com/PAHADIMODS/Aincrad-Key/main/Pahadi.txt?v=' + Date.now());
                         let finalUrl = (await r.text()).trim();
                         if (!finalUrl || !finalUrl.startsWith('http')) finalUrl = _fb;
-                        bypassAndRedirect(finalUrl, sec);
+                        smoothRedirect(finalUrl);
                     } catch(err) { window.location.replace(_fb); }
-                }, 1500);
+                }, 2000);
             }
         }, 1000);
     };
@@ -178,7 +150,7 @@
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
         <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
-        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
+        <button class="btn" onclick="window.run(59)">🔒 SAFE (50S)</button>
     `;
     document.body.appendChild(sel);
     window.run = (s) => { render(s); };
