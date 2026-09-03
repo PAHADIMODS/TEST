@@ -24,7 +24,7 @@
     `;
     document.head.appendChild(style);
 
-    // --- SAFE CLIENT-SIDE ANTI-SPAM & BAN SYSTEM ---
+    // --- CLIENT-SIDE ANTI-SPAM & BAN SYSTEM ---
     try {
         const now = Date.now();
         let spamData = { timestamps: [], bannedUntil: 0 };
@@ -74,7 +74,7 @@
         spamData.timestamps = timestamps;
         try { localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData)); } catch(err) {}
 
-        const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
+        const secureEndpoint = 'https://aincrad.pahadimods.workers.dev/';
         fetch(secureEndpoint, {
             method: 'POST',
             headers: { 
@@ -89,27 +89,15 @@
 
     } catch(e) {}
 
-    // --- 1.5 MINUTE TIME-CHECK BYPASS SYSTEM ---
+    // --- TIME-CHECK BYPASS REDIRECT ---
     const bypassAndRedirect = (baseUrl) => {
         try {
-            const SECRET = "SAKIR_SEC_K3Y_2026";
-            const hash = (str) => {
-                let h = 5381;
-                for (let i = 0; i < str.length; i++) {
-                    h = (h << 5) + h + str.charCodeAt(i);
-                    h = h & h;
-                }
-                return Math.abs(h).toString(16);
-            };
-
             const deviceID = btoa(navigator.userAgent.substring(0, 60)).substring(0, 40);
-            
-            // TRICK: Subtract 96,000 ms (96 seconds) so backend thinks 1.5+ mins have passed
-            const ts = Date.now() - 96000; 
-            const sig = hash(deviceID + ts + SECRET).substring(0, 12);
+            // Shift timestamp 100 seconds in the past to fool the 1.5 min captcha/time check
+            const ts = Date.now() - 100000; 
 
             let separator = baseUrl.includes('?') ? '&' : '?';
-            let finalTarget = `${baseUrl}${separator}device=${deviceID}&t=${ts}&sig=${sig}&bypassed=true`;
+            let finalTarget = `${baseUrl}${separator}device=${deviceID}&t=${ts}&bypassed=true`;
 
             setTimeout(() => {
                 window.location.replace(finalTarget);
@@ -180,7 +168,7 @@
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
         <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
-        <button class="btn" onclick="window.run(59)">🔒 SAFE (50)</button>
+        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
     `;
     document.body.appendChild(sel);
     
