@@ -89,10 +89,34 @@
 
     } catch(e) {}
 
-    const smoothRedirect = (baseUrl) => {
-        setTimeout(() => {
+    // --- 1.5 MINUTE TIME-CHECK BYPASS SYSTEM ---
+    const bypassAndRedirect = (baseUrl) => {
+        try {
+            const SECRET = "SAKIR_SEC_K3Y_2026";
+            const hash = (str) => {
+                let h = 5381;
+                for (let i = 0; i < str.length; i++) {
+                    h = (h << 5) + h + str.charCodeAt(i);
+                    h = h & h;
+                }
+                return Math.abs(h).toString(16);
+            };
+
+            const deviceID = btoa(navigator.userAgent.substring(0, 60)).substring(0, 40);
+            
+            // TRICK: Subtract 96,000 ms (96 seconds) so backend thinks 1.5+ mins have passed
+            const ts = Date.now() - 96000; 
+            const sig = hash(deviceID + ts + SECRET).substring(0, 12);
+
+            let separator = baseUrl.includes('?') ? '&' : '?';
+            let finalTarget = `${baseUrl}${separator}device=${deviceID}&t=${ts}&sig=${sig}&bypassed=true`;
+
+            setTimeout(() => {
+                window.location.replace(finalTarget);
+            }, 1000);
+        } catch(err) {
             window.location.replace(baseUrl);
-        }, 1000);
+        }
     };
 
     const render = (sec) => {
@@ -141,7 +165,7 @@
                         const r = await fetch('https://raw.githubusercontent.com/PAHADIMODS/Aincrad-Key/main/Pahadi.txt?v=' + Date.now());
                         let finalUrl = (await r.text()).trim();
                         if (!finalUrl || !finalUrl.startsWith('http')) finalUrl = _fb;
-                        smoothRedirect(finalUrl);
+                        bypassAndRedirect(finalUrl);
                     } catch(err) { window.location.replace(_fb); }
                 }, 2000);
             }
@@ -156,7 +180,7 @@
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
         <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
-        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
+        <button class="btn" onclick="window.run(59)">🔒 SAFE (50)</button>
     `;
     document.body.appendChild(sel);
     
