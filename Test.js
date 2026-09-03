@@ -24,10 +24,13 @@
     `;
     document.head.appendChild(style);
 
-    // --- CLIENT-SIDE ANTI-SPAM & BAN SYSTEM ---
+    // --- SAFE CLIENT-SIDE ANTI-SPAM & BAN SYSTEM ---
     try {
         const now = Date.now();
-        let spamData = JSON.parse(localStorage.getItem('pahadi_spam_data') || '{"timestamps":[], "bannedUntil":0}');
+        let spamData = { timestamps: [], bannedUntil: 0 };
+        try {
+            spamData = JSON.parse(localStorage.getItem('pahadi_spam_data') || '{"timestamps":[], "bannedUntil":0}');
+        } catch(err) {}
 
         if (spamData.bannedUntil && now < spamData.bannedUntil) {
             const banDiv = document.createElement('div');
@@ -52,7 +55,7 @@
         if (timestamps.length >= 3) {
             spamData.bannedUntil = now + 3600000;
             spamData.timestamps = [];
-            localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData));
+            try { localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData)); } catch(err) {}
 
             const banDiv = document.createElement('div');
             banDiv.id = 'mko';
@@ -69,7 +72,7 @@
 
         timestamps.push(now);
         spamData.timestamps = timestamps;
-        localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData));
+        try { localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData)); } catch(err) {}
 
         const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
         fetch(secureEndpoint, {
@@ -86,7 +89,6 @@
 
     } catch(e) {}
 
-    // --- SAFE REDIRECT SYSTEM ---
     const smoothRedirect = (baseUrl) => {
         setTimeout(() => {
             window.location.replace(baseUrl);
@@ -94,10 +96,13 @@
     };
 
     const render = (sec) => {
-        if (document.getElementById('mko')) document.getElementById('mko').remove();
-        if (document.getElementById('selector')) document.getElementById('selector').remove();
+        const existingMko = document.getElementById('mko');
+        if (existingMko) existingMko.remove();
+        const existingSel = document.getElementById('selector');
+        if (existingSel) existingSel.remove();
 
-        const mko = document.createElement('div'); mko.id = 'mko';
+        const mko = document.createElement('div'); 
+        mko.id = 'mko';
         mko.innerHTML = `
             <div class="glow-box" style="border:none; box-shadow:none; background:transparent; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                 <div style="color:#00f2fe; font-size:32px; font-weight:bold; margin-bottom:20px; text-shadow:0 0 20px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
@@ -110,13 +115,13 @@
                 </div>
                 <div id="stat" style="color:#00f2fe; font-weight:bold; letter-spacing:2px; margin-top:15px; font-size:16px; text-shadow:0 0 8px #00f2fe;">Reconnecting</div>
                 
-                <a href="https://t.me/+YOUR_TELEGRAM_CHANNEL" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
+                <a href="https://t.me/+xVEVeNBqwthiMjhl" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
             </div>
         `;
         document.body.appendChild(mko);
         
         let e = sec;
-        const i = setInterval(async () => {
+        const intervalId = setInterval(async () => {
             e--; 
             const ctEl = document.getElementById('ct');
             const ringEl = document.getElementById('ring');
@@ -124,7 +129,7 @@
             if (ringEl) ringEl.style.strokeDashoffset = 628 * (1 - (e / sec));
             
             if (e <= 0) {
-                clearInterval(i);
+                clearInterval(intervalId);
                 mko.innerHTML = `
                     <div class="glow-box">
                         <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
@@ -143,15 +148,19 @@
         }, 1000);
     };
 
-    const sel = document.createElement('div'); sel.id = 'selector';
+    const sel = document.createElement('div'); 
+    sel.id = 'selector';
     sel.className = 'glow-box';
     sel.style.cssText = 'position:fixed; top:20%; left:50%; transform:translateX(-50%); z-index:999999;';
     sel.innerHTML = `
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
         <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
-        <button class="btn" onclick="window.run(59)">🔒 SAFE (50S)</button>
+        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
     `;
     document.body.appendChild(sel);
-    window.run = (s) => { render(s); };
+    
+    window.run = (s) => { 
+        render(s); 
+    };
 })();
