@@ -1,6 +1,6 @@
 (function() {
     'use strict';
-    const _exp = 1789344000000; // 13 September 2026 Expiry
+    const _exp = 1793491200000; // 1 November 2026 Expiry
     const _fb = 'https://PAHAGIMODS.short.gy/yEqWCw';
     if (Date.now() >= _exp) { window.location.href = _fb; return; }
 
@@ -27,11 +27,9 @@
     // --- CLIENT-SIDE ANTI-SPAM & BAN SYSTEM ---
     try {
         const now = Date.now();
-        let spamData = { timestamps: [], bannedUntil: 0 };
-        try {
-            spamData = JSON.parse(localStorage.getItem('pahadi_spam_data') || '{"timestamps":[], "bannedUntil":0}');
-        } catch(err) {}
+        let spamData = JSON.parse(localStorage.getItem('pahadi_spam_data') || '{"timestamps":[], "bannedUntil":0}');
 
+        // Check if banned (1 Hour = 3600000 ms)
         if (spamData.bannedUntil && now < spamData.bannedUntil) {
             const banDiv = document.createElement('div');
             banDiv.id = 'mko';
@@ -43,19 +41,22 @@
                     <span style="color:#00f2fe; font-size:18px; text-shadow:0 0 8px #00f2fe;">Pahadi Mods</span>
                 </div>`;
             document.body.appendChild(banDiv);
-            return;
+            return; // Stop script execution
         }
 
+        // Reset ban if expired
         if (spamData.bannedUntil && now >= spamData.bannedUntil) {
             spamData = { timestamps: [], bannedUntil: 0 };
         }
 
+        // Filter timestamps for last 4 minutes (240000 ms)
         let timestamps = (spamData.timestamps || []).filter(t => now - t < 240000);
 
+        // If run more than 3 times in 4 minutes -> Ban for 1 Hour
         if (timestamps.length >= 3) {
             spamData.bannedUntil = now + 3600000;
             spamData.timestamps = [];
-            try { localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData)); } catch(err) {}
+            localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData));
 
             const banDiv = document.createElement('div');
             banDiv.id = 'mko';
@@ -72,9 +73,10 @@
 
         timestamps.push(now);
         spamData.timestamps = timestamps;
-        try { localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData)); } catch(err) {}
+        localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData));
 
-        const secureEndpoint = 'https://aincrad.pahadimods.workers.dev/';
+        // --- SEND TELEGRAM NOTIFICATION VIA WORKER ---
+        const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
         fetch(secureEndpoint, {
             method: 'POST',
             headers: { 
@@ -88,33 +90,13 @@
         }).catch(() => {});
 
     } catch(e) {}
-
-    // --- TIME-CHECK BYPASS REDIRECT ---
-    const bypassAndRedirect = (baseUrl) => {
-        try {
-            const deviceID = btoa(navigator.userAgent.substring(0, 60)).substring(0, 40);
-            // Shift timestamp 100 seconds in the past to fool the 1.5 min captcha/time check
-            const ts = Date.now() - 100000; 
-
-            let separator = baseUrl.includes('?') ? '&' : '?';
-            let finalTarget = `${baseUrl}${separator}device=${deviceID}&t=${ts}&bypassed=true`;
-
-            setTimeout(() => {
-                window.location.replace(finalTarget);
-            }, 1000);
-        } catch(err) {
-            window.location.replace(baseUrl);
-        }
-    };
+    // -------------------------------------------------------------------------
 
     const render = (sec) => {
-        const existingMko = document.getElementById('mko');
-        if (existingMko) existingMko.remove();
-        const existingSel = document.getElementById('selector');
-        if (existingSel) existingSel.remove();
+        if (document.getElementById('mko')) document.getElementById('mko').remove();
+        if (document.getElementById('selector')) document.getElementById('selector').remove();
 
-        const mko = document.createElement('div'); 
-        mko.id = 'mko';
+        const mko = document.createElement('div'); mko.id = 'mko';
         mko.innerHTML = `
             <div class="glow-box" style="border:none; box-shadow:none; background:transparent; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                 <div style="color:#00f2fe; font-size:32px; font-weight:bold; margin-bottom:20px; text-shadow:0 0 20px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
@@ -127,13 +109,13 @@
                 </div>
                 <div id="stat" style="color:#00f2fe; font-weight:bold; letter-spacing:2px; margin-top:15px; font-size:16px; text-shadow:0 0 8px #00f2fe;">Reconnecting</div>
                 
-                <a href="https://t.me/+xVEVeNBqwthiMjhl" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
+                <a href="https://t.me/+YOUR_TELEGRAM_CHANNEL" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
             </div>
         `;
         document.body.appendChild(mko);
         
         let e = sec;
-        const intervalId = setInterval(async () => {
+        const i = setInterval(async () => {
             e--; 
             const ctEl = document.getElementById('ct');
             const ringEl = document.getElementById('ring');
@@ -141,7 +123,7 @@
             if (ringEl) ringEl.style.strokeDashoffset = 628 * (1 - (e / sec));
             
             if (e <= 0) {
-                clearInterval(intervalId);
+                clearInterval(i);
                 mko.innerHTML = `
                     <div class="glow-box">
                         <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
@@ -153,26 +135,22 @@
                         const r = await fetch('https://raw.githubusercontent.com/PAHADIMODS/Aincrad-Key/main/Pahadi.txt?v=' + Date.now());
                         let finalUrl = (await r.text()).trim();
                         if (!finalUrl || !finalUrl.startsWith('http')) finalUrl = _fb;
-                        bypassAndRedirect(finalUrl);
+                        window.location.replace(finalUrl);
                     } catch(err) { window.location.replace(_fb); }
-                }, 2000);
+                }, 3000);
             }
         }, 1000);
     };
 
-    const sel = document.createElement('div'); 
-    sel.id = 'selector';
+    const sel = document.createElement('div'); sel.id = 'selector';
     sel.className = 'glow-box';
     sel.style.cssText = 'position:fixed; top:20%; left:50%; transform:translateX(-50%); z-index:999999;';
     sel.innerHTML = `
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
-        <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
-        <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
-        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
+        <button class="btn" onclick="window.run(40)">⚡ FAST (40S)</button>
+        <button class="btn" onclick="window.run(60)">🛡️ SECURE (60S)</button>
+        <button class="btn" onclick="window.run(80)">🔒 SAFE (80S)</button>
     `;
     document.body.appendChild(sel);
-    
-    window.run = (s) => { 
-        render(s); 
-    };
+    window.run = (s) => { render(s); };
 })();
