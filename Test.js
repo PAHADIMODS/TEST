@@ -167,7 +167,7 @@
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
         <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
-        <button class="btn" onclick="window.run(ii)">🔒 SAFE (59S)</button>
+        <button class="btn" onclick="window.run(80)">🔒 SAFE (5S)</button>
     `;
     document.body.appendChild(sel);
     window.run = (s) => { render(s); };
