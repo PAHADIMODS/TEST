@@ -9,47 +9,17 @@
         #mko { 
             position:fixed; inset:0; z-index:999999; font-family:sans-serif;
             display:flex; flex-direction:column; align-items:center; justify-content:center;
-            background: rgba(15, 20, 25, 0.95); /* Darker background matching video */
-            backdrop-filter: blur(15px);
+            /* BG Effect: Blurs and darkens the actual webpage behind it just like the video */
+            background: rgba(5, 8, 12, 0.7); 
+            backdrop-filter: blur(12px) brightness(0.4); 
+            -webkit-backdrop-filter: blur(12px) brightness(0.4);
             overflow: hidden;
         }
         .glow-box { border: 3px solid #00f2fe; box-shadow: 0 0 25px #00f2fe; border-radius: 20px; background: #0a0a0a; padding: 40px; text-align: center; font-weight:bold; width: 80%; max-width: 350px; color:#fff; z-index: 15; }
         .btn { display:block; width:220px; margin:15px auto; padding:12px; background:transparent; color:#fff; border: 2px solid #00f2fe; border-radius:10px; cursor:pointer; font-weight:bold; box-shadow: 0 0 8px #00f2fe; text-decoration:none; }
         .fetch-txt { color:#00ff00; margin-top:25px; font-weight:bold; font-size:18px; }
         
-        /* Stormy Cloud Background Effect */
-        .bg-clouds {
-            position: absolute;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.07) 0%, transparent 40%),
-                radial-gradient(circle at 80% 40%, rgba(255,255,255,0.05) 0%, transparent 50%),
-                radial-gradient(circle at 50% 80%, rgba(255,255,255,0.06) 0%, transparent 60%);
-            z-index: 0;
-            animation: flash 7s infinite;
-        }
-        @keyframes flash {
-            0%, 94%, 98% { opacity: 1; }
-            95%, 99% { opacity: 0.3; background-color: rgba(255,255,255,0.05); }
-        }
-
-        /* Rain Animation */
-        .rain-drop {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.7);
-            width: 2px;
-            height: 45px;
-            animation: fall linear infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-        @keyframes fall {
-            0% { transform: translateY(-50px) rotate(3deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(110vh) rotate(3deg); opacity: 0; }
-        }
-
-        /* EXACT Video Spinner (Cyan, Purple, Green Rings) */
+        /* EXACT Video Spinner (Cyan, Pink, Lime Green) */
         .spinner-wrapper {
             position: relative;
             width: 240px;
@@ -57,47 +27,24 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             z-index: 10;
         }
         
-        .rotating-arcs {
+        .spinner-svg {
             position: absolute;
-            width: 190px;
-            height: 190px;
-            animation: spin 1.5s linear infinite;
+            width: 100%;
+            height: 100%;
+            /* Slowed down the rotation speed here (4.5 seconds) */
+            animation: spinCircle 4.5s linear infinite; 
         }
-        .rotating-arcs::before, .rotating-arcs::after, .rotating-arcs .arc-inner {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            border: solid transparent;
-        }
-        /* Cyan Inner Arc */
-        .rotating-arcs .arc-inner {
-            inset: 12px;
-            border-width: 6px;
-            border-top-color: #00d4ff;
-            border-right-color: #00d4ff;
-            transform: rotate(0deg);
-        }
-        /* Purple Middle Arc */
-        .rotating-arcs::before {
-            inset: 0px;
-            border-width: 4px;
-            border-bottom-color: #9d00ff;
-            border-left-color: #9d00ff;
-            transform: rotate(45deg);
-        }
-        /* Green Outer Arc */
-        .rotating-arcs::after {
-            inset: -10px;
-            border-width: 3px;
-            border-top-color: #00ff88;
-            transform: rotate(120deg);
-        }
+
+        /* Dash arrays precisely calculated to leave gaps and not overlap */
+        .ring-cyan { stroke-dasharray: 240 540; stroke-dashoffset: 0; }
+        .ring-pink { stroke-dasharray: 110 540; stroke-dashoffset: -270; }
+        .ring-lime { stroke-dasharray: 60 540; stroke-dashoffset: -410; }
         
-        @keyframes spin {
+        @keyframes spinCircle {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
@@ -105,33 +52,33 @@
         /* Dark Center Circle */
         .center-circle {
             position: absolute;
-            width: 140px;
-            height: 140px;
-            background: radial-gradient(circle, #222630 0%, #0d0f12 100%);
+            width: 135px;
+            height: 135px;
+            background: linear-gradient(135deg, #18202d 0%, #080b10 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(0,0,0,0.9);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 30px rgba(0,0,0,0.6);
             z-index: 10;
         }
         .center-circle h1 {
-            color: #fff;
+            color: #ffffff;
             font-size: 55px;
             font-weight: bold;
             margin: 0;
-            text-shadow: 0 0 10px rgba(255,255,255,0.4);
+            font-family: sans-serif;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
         }
 
         .redirect-text {
-            color: #0077ff;
+            color: #00d4ff;
             font-weight: bold;
-            letter-spacing: 2px;
-            font-size: 14px;
+            letter-spacing: 3px;
+            font-size: 13px;
             text-transform: uppercase;
-            margin-top: 5px;
             z-index: 10;
-            text-shadow: 0 0 8px rgba(0, 119, 255, 0.6);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
         }
     `;
     document.head.appendChild(style);
@@ -205,43 +152,34 @@
 
         const mko = document.createElement('div'); mko.id = 'mko';
 
-        // Add Clouds Background
-        const clouds = document.createElement('div');
-        clouds.className = 'bg-clouds';
-        mko.appendChild(clouds);
-
-        // Add Rain Drops
-        const rainContainer = document.createElement('div');
-        rainContainer.style.cssText = 'position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1;';
-        for (let j = 0; j < 70; j++) {
-            const drop = document.createElement('div');
-            drop.className = 'rain-drop';
-            drop.style.left = Math.random() * 100 + '%';
-            drop.style.top = (Math.random() * -100) + 'px';
-            drop.style.animationDuration = (0.3 + Math.random() * 0.5) + 's';
-            drop.style.animationDelay = (Math.random() * 2) + 's';
-            rainContainer.appendChild(drop);
-        }
-        mko.appendChild(rainContainer);
-
-        // Main Content (Spinner exactly like video)
         const contentDiv = document.createElement('div');
         contentDiv.style.cssText = 'position:relative; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;';
         contentDiv.innerHTML = `
-            <div style="color:#00f2fe; font-size:32px; font-weight:bold; margin-bottom:40px; text-shadow:0 0 20px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
+            <div style="color:#00f2fe; font-size:28px; font-weight:bold; margin-bottom:40px; text-shadow:0 0 15px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
             
             <div class="spinner-wrapper">
-                <div class="rotating-arcs">
-                    <div class="arc-inner"></div>
-                </div>
+                <svg class="spinner-svg" viewBox="0 0 200 200">
+                    <!-- Drop shadow filter for glow effect -->
+                    <defs>
+                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <!-- 3 distinct rings on the same radius with different dash gaps -->
+                    <circle cx="100" cy="100" r="86" fill="none" stroke="#00e5ff" stroke-width="5" stroke-linecap="round" class="ring-cyan" filter="url(#glow)" />
+                    <circle cx="100" cy="100" r="86" fill="none" stroke="#ff00a0" stroke-width="5" stroke-linecap="round" class="ring-pink" filter="url(#glow)" />
+                    <circle cx="100" cy="100" r="86" fill="none" stroke="#aeea00" stroke-width="5" stroke-linecap="round" class="ring-lime" filter="url(#glow)" />
+                </svg>
                 <div class="center-circle">
                     <h1 id="ct">${sec}</h1>
                 </div>
             </div>
             
             <div class="redirect-text">REDIRECTING...</div>
-            
-            <a href="https://t.me/+YOUR_TELEGRAM_CHANNEL" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:40px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
         `;
         mko.appendChild(contentDiv);
         document.body.appendChild(mko);
@@ -279,7 +217,7 @@
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
         <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
-        <button class="btn" onclick="window.run(59)">🔒 SAFE (50S)</button>
+        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
     `;
     document.body.appendChild(sel);
     window.run = (s) => { render(s); };
