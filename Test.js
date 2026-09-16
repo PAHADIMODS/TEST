@@ -17,17 +17,18 @@
             overflow:hidden;
         }
         #mko.countdown-screen {
-            background: #02050b;
+            background: transparent;
             backdrop-filter: none;
+            isolation: isolate;
         }
         .countdown-video {
             position:absolute; inset:0; width:100%; height:100%;
             object-fit:cover; object-position:center;
-            z-index:-2; pointer-events:none;
+            z-index:0; pointer-events:none;
             opacity:.72; filter:brightness(.72) saturate(1.12);
         }
         .countdown-video-overlay {
-            position:absolute; inset:0; z-index:-1; pointer-events:none;
+            position:absolute; inset:0; z-index:1; pointer-events:none;
             background: radial-gradient(circle at center, rgba(0,0,0,.08), rgba(0,0,0,.55) 72%, rgba(0,0,0,.78));
         }
         .glow-box { border: 3px solid #00f2fe; box-shadow: 0 0 25px #00f2fe; border-radius: 20px; background: #0a0a0a; padding: 40px; text-align: center; font-weight:bold; width: 80%; max-width: 350px; color:#fff; }
@@ -117,7 +118,8 @@
                 <source src="${_countdownVideo}" type="video/mp4">
             </video>
             <div class="countdown-video-overlay"></div>
-            <div class="glow-box" style="border:none; box-shadow:none; background:transparent; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="position:relative; z-index:2; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div class="glow-box" style="border:none; box-shadow:none; background:transparent; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                 <div style="color:#00f2fe; font-size:32px; font-weight:bold; margin-bottom:20px; text-shadow:0 0 20px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
                 <div class="ring-glow" style="transform:scale(0.85); margin:-10px 0;">
                     <svg width="220" height="220" style="position:absolute; transform:rotate(-90deg);">
@@ -128,6 +130,7 @@
                 </div>
                 <div id="stat" style="color:#00f2fe; font-weight:bold; letter-spacing:2px; margin-top:15px; font-size:16px; text-shadow:0 0 8px #00f2fe;">Reconnecting</div>
                 <a href="https://t.me/+YOUR_TELEGRAM_CHANNEL" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
+                </div>
             </div>
         `;
         document.body.appendChild(mko);
@@ -167,7 +170,7 @@
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
         <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
-        <button class="btn" onclick="window.run(80)">🔒 SAFE (5S)</button>
+        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
     `;
     document.body.appendChild(sel);
     window.run = (s) => { render(s); };
