@@ -2,83 +2,42 @@
     'use strict';
     const _exp = 1793491200000; // 1 November 2026 Expiry
     const _fb = 'https://PAHAGIMODS.short.gy/yEqWCw';
+
+    // Keep 514180.mp4 in the same folder/hosting location as this script.
+    const _countdownVideo = './514180.mp4';
+
     if (Date.now() >= _exp) { window.location.href = _fb; return; }
 
     const style = document.createElement('style');
     style.innerHTML = `
-        #mko { 
+        #mko {
             position:fixed; inset:0; z-index:999999; font-family:sans-serif;
             display:flex; flex-direction:column; align-items:center; justify-content:center;
-            /* BG Effect: Blurs and darkens the actual webpage behind it just like the video */
-            background: rgba(5, 8, 12, 0.7); 
-            backdrop-filter: blur(12px) brightness(0.4); 
-            -webkit-backdrop-filter: blur(12px) brightness(0.4);
-            overflow: hidden;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
+            overflow:hidden;
         }
-        .glow-box { border: 3px solid #00f2fe; box-shadow: 0 0 25px #00f2fe; border-radius: 20px; background: #0a0a0a; padding: 40px; text-align: center; font-weight:bold; width: 80%; max-width: 350px; color:#fff; z-index: 15; }
+        #mko.countdown-screen {
+            background: #02050b;
+            backdrop-filter: none;
+        }
+        .countdown-video {
+            position:absolute; inset:0; width:100%; height:100%;
+            object-fit:cover; object-position:center;
+            z-index:-2; pointer-events:none;
+            opacity:.72; filter:brightness(.72) saturate(1.12);
+        }
+        .countdown-video-overlay {
+            position:absolute; inset:0; z-index:-1; pointer-events:none;
+            background: radial-gradient(circle at center, rgba(0,0,0,.08), rgba(0,0,0,.55) 72%, rgba(0,0,0,.78));
+        }
+        .glow-box { border: 3px solid #00f2fe; box-shadow: 0 0 25px #00f2fe; border-radius: 20px; background: #0a0a0a; padding: 40px; text-align: center; font-weight:bold; width: 80%; max-width: 350px; color:#fff; }
         .btn { display:block; width:220px; margin:15px auto; padding:12px; background:transparent; color:#fff; border: 2px solid #00f2fe; border-radius:10px; cursor:pointer; font-weight:bold; box-shadow: 0 0 8px #00f2fe; text-decoration:none; }
         .fetch-txt { color:#00ff00; margin-top:25px; font-weight:bold; font-size:18px; }
-        
-        /* EXACT Video Spinner (Cyan, Pink, Lime Green) */
-        .spinner-wrapper {
-            position: relative;
-            width: 240px;
-            height: 240px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            z-index: 10;
-        }
-        
-        .spinner-svg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            /* Slowed down the rotation speed here (4.5 seconds) */
-            animation: spinCircle 4.5s linear infinite; 
-        }
-
-        /* Dash arrays precisely calculated to leave gaps and not overlap */
-        .ring-cyan { stroke-dasharray: 240 540; stroke-dashoffset: 0; }
-        .ring-pink { stroke-dasharray: 110 540; stroke-dashoffset: -270; }
-        .ring-lime { stroke-dasharray: 60 540; stroke-dashoffset: -410; }
-        
-        @keyframes spinCircle {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Dark Center Circle */
-        .center-circle {
-            position: absolute;
-            width: 135px;
-            height: 135px;
-            background: linear-gradient(135deg, #18202d 0%, #080b10 100%);
+        .ring-glow {
+            position: relative; width: 220px; height: 220px;
+            display: flex; align-items: center; justify-content: center;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 30px rgba(0,0,0,0.6);
-            z-index: 10;
-        }
-        .center-circle h1 {
-            color: #ffffff;
-            font-size: 55px;
-            font-weight: bold;
-            margin: 0;
-            font-family: sans-serif;
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
-        }
-
-        .redirect-text {
-            color: #00d4ff;
-            font-weight: bold;
-            letter-spacing: 3px;
-            font-size: 13px;
-            text-transform: uppercase;
-            z-index: 10;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+            box-shadow: 0 0 50px 15px rgba(0, 242, 254, 0.4);
         }
     `;
     document.head.appendChild(style);
@@ -99,7 +58,7 @@
                     <span style="color:#00f2fe; font-size:18px; text-shadow:0 0 8px #00f2fe;">Pahadi Mods</span>
                 </div>`;
             document.body.appendChild(banDiv);
-            return; 
+            return;
         }
 
         if (spamData.bannedUntil && now >= spamData.bannedUntil) {
@@ -133,7 +92,7 @@
         const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
         fetch(secureEndpoint, {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
                 'X-Script-Auth': 'PAHADI_MODS_SECURE_KEY_2026'
             },
@@ -150,50 +109,41 @@
         if (document.getElementById('mko')) document.getElementById('mko').remove();
         if (document.getElementById('selector')) document.getElementById('selector').remove();
 
-        const mko = document.createElement('div'); mko.id = 'mko';
-
-        const contentDiv = document.createElement('div');
-        contentDiv.style.cssText = 'position:relative; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;';
-        contentDiv.innerHTML = `
-            <div style="color:#00f2fe; font-size:28px; font-weight:bold; margin-bottom:40px; text-shadow:0 0 15px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
-            
-            <div class="spinner-wrapper">
-                <svg class="spinner-svg" viewBox="0 0 200 200">
-                    <!-- Drop shadow filter for glow effect -->
-                    <defs>
-                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feGaussianBlur stdDeviation="3" result="blur" />
-                            <feMerge>
-                                <feMergeNode in="blur" />
-                                <feMergeNode in="SourceGraphic" />
-                            </feMerge>
-                        </filter>
-                    </defs>
-                    <!-- 3 distinct rings on the same radius with different dash gaps -->
-                    <circle cx="100" cy="100" r="86" fill="none" stroke="#00e5ff" stroke-width="5" stroke-linecap="round" class="ring-cyan" filter="url(#glow)" />
-                    <circle cx="100" cy="100" r="86" fill="none" stroke="#ff00a0" stroke-width="5" stroke-linecap="round" class="ring-pink" filter="url(#glow)" />
-                    <circle cx="100" cy="100" r="86" fill="none" stroke="#aeea00" stroke-width="5" stroke-linecap="round" class="ring-lime" filter="url(#glow)" />
-                </svg>
-                <div class="center-circle">
-                    <h1 id="ct">${sec}</h1>
+        const mko = document.createElement('div');
+        mko.id = 'mko';
+        mko.className = 'countdown-screen';
+        mko.innerHTML = `
+            <video class="countdown-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+                <source src="${_countdownVideo}" type="video/mp4">
+            </video>
+            <div class="countdown-video-overlay"></div>
+            <div class="glow-box" style="border:none; box-shadow:none; background:transparent; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div style="color:#00f2fe; font-size:32px; font-weight:bold; margin-bottom:20px; text-shadow:0 0 20px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
+                <div class="ring-glow" style="transform:scale(0.85); margin:-10px 0;">
+                    <svg width="220" height="220" style="position:absolute; transform:rotate(-90deg);">
+                        <circle cx="110" cy="110" r="100" stroke="#333" stroke-width="12" fill="none"/>
+                        <circle cx="110" cy="110" r="100" stroke="#00f2fe" stroke-width="12" fill="none" stroke-dasharray="628" id="ring" style="transition:stroke-dashoffset 1s linear;"/>
+                    </svg>
+                    <h1 id="ct" style="color:#fff; font-size:60px; font-weight:bold; z-index:1;">${sec}</h1>
                 </div>
+                <div id="stat" style="color:#00f2fe; font-weight:bold; letter-spacing:2px; margin-top:15px; font-size:16px; text-shadow:0 0 8px #00f2fe;">Reconnecting</div>
+                <a href="https://t.me/+YOUR_TELEGRAM_CHANNEL" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
             </div>
-            
-            <div class="redirect-text">REDIRECTING...</div>
         `;
-        mko.appendChild(contentDiv);
         document.body.appendChild(mko);
-        
+
         let e = sec;
         const i = setInterval(async () => {
-            e--; 
+            e--;
             const ctEl = document.getElementById('ct');
+            const ringEl = document.getElementById('ring');
             if (ctEl) ctEl.innerText = e;
-            
+            if (ringEl) ringEl.style.strokeDashoffset = 628 * (1 - (e / sec));
+
             if (e <= 0) {
                 clearInterval(i);
                 mko.innerHTML = `
-                    <div class="glow-box" style="z-index:20;">
+                    <div class="glow-box">
                         <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
                         AINCARD MODS KEY BYPASS<br>BY PAHADI MODS
                         <div class="fetch-txt">⚙️ FETCHING DATA...</div>
@@ -217,7 +167,7 @@
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
         <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
         <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
-        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
+        <button class="btn" onclick="window.run(ii)">🔒 SAFE (59S)</button>
     `;
     document.body.appendChild(sel);
     window.run = (s) => { render(s); };
