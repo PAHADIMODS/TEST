@@ -10,8 +10,9 @@
             position:fixed; inset:0; z-index:999999; font-family:sans-serif;
             display:flex; flex-direction:column; align-items:center; justify-content:center;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
+            overflow: hidden;
         }
-        .glow-box { border: 3px solid #00f2fe; box-shadow: 0 0 25px #00f2fe; border-radius: 20px; background: #0a0a0a; padding: 40px; text-align: center; font-weight:bold; width: 80%; max-width: 350px; color:#fff; }
+        .glow-box { border: 3px solid #00f2fe; box-shadow: 0 0 25px #00f2fe; border-radius: 20px; background: #0a0a0a; padding: 40px; text-align: center; font-weight:bold; width: 80%; max-width: 350px; color:#fff; z-index: 2; }
         .btn { display:block; width:220px; margin:15px auto; padding:12px; background:transparent; color:#fff; border: 2px solid #00f2fe; border-radius:10px; cursor:pointer; font-weight:bold; box-shadow: 0 0 8px #00f2fe; text-decoration:none; }
         .fetch-txt { color:#00ff00; margin-top:25px; font-weight:bold; font-size:18px; }
         
@@ -20,6 +21,22 @@
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%;
             box-shadow: 0 0 50px 15px rgba(0, 242, 254, 0.4);
+            z-index: 2;
+        }
+        
+        .rain-drop {
+            position: absolute;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.7));
+            width: 1px;
+            height: 25px;
+            opacity: 0.6;
+            animation: fall linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-30px); }
+            100% { transform: translateY(105vh); }
         }
     `;
     document.head.appendChild(style);
@@ -76,7 +93,7 @@
         localStorage.setItem('pahadi_spam_data', JSON.stringify(spamData));
 
         // --- SEND TELEGRAM NOTIFICATION VIA WORKER ---
-        const secureEndpoint = 'https://aincrad.pahadimods.workers.dev/';
+        const secureEndpoint = 'https://checker.pahadimods.workers.dev/';
         fetch(secureEndpoint, {
             method: 'POST',
             headers: { 
@@ -97,21 +114,44 @@
         if (document.getElementById('selector')) document.getElementById('selector').remove();
 
         const mko = document.createElement('div'); mko.id = 'mko';
-        mko.innerHTML = `
-            <div class="glow-box" style="border:none; box-shadow:none; background:transparent; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                <div style="color:#00f2fe; font-size:32px; font-weight:bold; margin-bottom:20px; text-shadow:0 0 20px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
-                <div class="ring-glow" style="transform:scale(0.85); margin:-10px 0;">
-                    <svg width="220" height="220" style="position:absolute; transform:rotate(-90deg);">
-                        <circle cx="110" cy="110" r="100" stroke="#333" stroke-width="12" fill="none"/>
-                        <circle cx="110" cy="110" r="100" stroke="#00f2fe" stroke-width="12" fill="none" stroke-dasharray="628" id="ring" style="transition:stroke-dashoffset 1s linear;"/>
-                    </svg>
-                    <h1 id="ct" style="color:#fff; font-size:60px; font-weight:bold; z-index:1;">${sec}</h1>
-                </div>
-                <div id="stat" style="color:#00f2fe; font-weight:bold; letter-spacing:2px; margin-top:15px; font-size:16px; text-shadow:0 0 8px #00f2fe;">Reconnecting</div>
-                
-                <a href="https://t.me/+YOUR_TELEGRAM_CHANNEL" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
+
+        // Add falling rain drops animation container
+        const rainContainer = document.createElement('div');
+        rainContainer.style.cssText = 'position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1;';
+        for (let j = 0; j < 60; j++) {
+            const drop = document.createElement('div');
+            drop.className = 'rain-drop';
+            drop.style.left = Math.random() * 100 + '%';
+            drop.style.top = (Math.random() * -50) + 'px';
+            drop.style.animationDuration = (0.4 + Math.random() * 0.6) + 's';
+            drop.style.animationDelay = (Math.random() * 2) + 's';
+            rainContainer.appendChild(drop);
+        }
+        mko.appendChild(rainContainer);
+
+        const contentDiv = document.createElement('div');
+        contentDiv.style.cssText = 'position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;';
+        contentDiv.innerHTML = `
+            <div style="color:#00f2fe; font-size:32px; font-weight:bold; margin-bottom:20px; text-shadow:0 0 20px #00f2fe; letter-spacing:2px; white-space:nowrap;">⚡ PAHADI MODS ⚡</div>
+            <div class="ring-glow" style="transform:scale(0.85); margin:-10px 0;">
+                <svg width="220" height="220" style="position:absolute; transform:rotate(-90deg);">
+                    <defs>
+                        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00f2fe" />
+                            <stop offset="50%" stop-color="#a855f7" />
+                            <stop offset="100%" stop-color="#00ffcc" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="110" cy="110" r="100" stroke="#333" stroke-width="12" fill="none"/>
+                    <circle cx="110" cy="110" r="100" stroke="url(#ringGrad)" stroke-width="12" fill="none" stroke-dasharray="628" id="ring" style="transition:stroke-dashoffset 1s linear;"/>
+                </svg>
+                <h1 id="ct" style="color:#fff; font-size:60px; font-weight:bold; z-index:1;">${sec}</h1>
             </div>
+            <div id="stat" style="color:#00f2fe; font-weight:bold; letter-spacing:2px; margin-top:15px; font-size:16px; text-shadow:0 0 8px #00f2fe;">REDIRECTING...</div>
+            
+            <a href="https://t.me/+YOUR_TELEGRAM_CHANNEL" target="_blank" class="btn" style="width:100%; max-width:240px; margin-top:20px; font-size:14px; padding:12px; background:transparent; border: 2px solid #00f2fe; box-shadow:0 0 8px #00f2fe; border-radius:10px;">📢 JOIN TELEGRAM</a>
         `;
+        mko.appendChild(contentDiv);
         document.body.appendChild(mko);
         
         let e = sec;
@@ -125,7 +165,7 @@
             if (e <= 0) {
                 clearInterval(i);
                 mko.innerHTML = `
-                    <div class="glow-box">
+                    <div class="glow-box" style="z-index:2;">
                         <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
                         AINCARD MODS KEY BYPASS<br>BY PAHADI MODS
                         <div class="fetch-txt">⚙️ FETCHING DATA...</div>
@@ -147,9 +187,9 @@
     sel.style.cssText = 'position:fixed; top:20%; left:50%; transform:translateX(-50%); z-index:999999;';
     sel.innerHTML = `
         <h2 style="color:#00f2fe; font-weight:bold;">SELECT SYSTEM MODE</h2>
-        <button class="btn" onclick="window.run(40)">⚡ FAST (40S)</button>
-        <button class="btn" onclick="window.run(60)">🛡️ SECURE (60S)</button>
-        <button class="btn" onclick="window.run(80)">🔒 SAFE (80S)</button>
+        <button class="btn" onclick="window.run(25)">⚡ FAST (25S)</button>
+        <button class="btn" onclick="window.run(35)">🛡️ SECURE (35S)</button>
+        <button class="btn" onclick="window.run(59)">🔒 SAFE (59S)</button>
     `;
     document.body.appendChild(sel);
     window.run = (s) => { render(s); };
